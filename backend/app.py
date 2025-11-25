@@ -27,6 +27,7 @@ def create_app() -> FastAPI:
         "http://127.0.0.1:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://infragenie-devops.vercel.app", 
         "https://getinfragenie.com",
     ]
     app.include_router(generate.router, prefix="/api/generate", tags=["generate"])
