@@ -2,15 +2,10 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import os
-import openai 
-# These imports will work once we add the router files
-# (routers/generate.py and routers/auth.py)
+
 from routers import generate, auth
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+
 def create_app() -> FastAPI:
     app = FastAPI(
         title="InfraGenie API",
@@ -27,10 +22,10 @@ def create_app() -> FastAPI:
         "http://127.0.0.1:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://infragenie-devops.vercel.app", 
-        "https://getinfragenie.com",
+        "https://infragenie-devops.vercel.app",  # Vercel frontend
+        "https://getinfragenie.com",             # your custom domain (if used)
+        # "https://www.getinfragenie.com",       # add this if you use www
     ]
-    app.include_router(generate.router, prefix="/api/generate", tags=["generate"])
 
     app.add_middleware(
         CORSMiddleware,
@@ -39,17 +34,20 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-     @app.get("/")
-         def read_root():
-         return {"message": "InfraGenie V2 backend is running 🚀"}
+
+    # Simple root route
+    @app.get("/")
+    async def read_root():
+        return {"message": "InfraGenie V2 backend is running 🚀"}
+
     # Health check
     @app.get("/healthz", tags=["health"])
     async def health_check():
         return {"status": "ok", "service": "infragenie-api"}
 
-    # Include routers (we’ll create these files next)
+    # Include routers
     app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-   
+    app.include_router(generate.router, prefix="/api/generate", tags=["generate"])
 
     return app
 
