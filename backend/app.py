@@ -38,7 +38,9 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
+     @app.get("/")
+         def read_root():
+         return {"message": "InfraGenie V2 backend is running 🚀"}
     # Health check
     @app.get("/healthz", tags=["health"])
     async def health_check():
