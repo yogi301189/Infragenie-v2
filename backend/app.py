@@ -49,7 +49,7 @@ def create_app() -> FastAPI:
 
     # Include routers (we’ll create these files next)
     app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-    app.include_router(generate.router, prefix="/api/generate", tags=["generate"])
+   
 
     return app
 
