@@ -8,9 +8,9 @@ from pydantic import BaseModel
 import io
 import zipfile
 import os
-import openai  # use the same client lib you're already using
+from openai import OpenAI  # use the same client lib you're already using
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
 
 from services.generation_service import GenerationService
 from utils.logger import get_logger
@@ -190,9 +190,13 @@ async def generate_infra(payload: GenerateRequest) -> GenerateResponse:
 def explain_file(req: ExplainRequest):
     """
     Return a human-friendly explanation for a generated file.
+    Always returns 200 with either an explanation or a graceful error message.
     """
     if not req.content.strip():
-        raise HTTPException(status_code=400, detail="File content is empty")
+        # Don't throw 400, just explain why there's no explanation
+        return ExplainResponse(
+            explanation="This file is empty, so there is nothing to explain yet."
+        )
 
     user_prompt = f"""
 You are InfraGenie, a DevOps assistant. Explain the following file to a developer
@@ -216,125 +220,46 @@ Use Markdown-style bullets and short paragraphs.
 """
 
     try:
-        # Try old-style API first (openai<=0.28)
-        explanation_text = None
-
-        if hasattr(openai, "ChatCompletion"):
-            completion = openai.ChatCompletion.create(
-                model="gpt-4o-mini",  # or your existing model
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a DevOps expert who explains config files in simple language.",
-                    },
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=0.3,
-            )
-            explanation_text = (
-                completion["choices"][0]["message"]["content"].strip()
-            )
-        else:
-            # Fallback for new OpenAI SDK (openai>=1.0.0)
-            from openai import OpenAI
-
-            client = OpenAI()
-            completion = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a DevOps expert who explains config files in simple language.",
-                    },
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=0.3,
-            )
-            explanation_text = completion.choices[0].message.content.strip()
-
-    except Exception as e:
-        logger.exception("Explain error")
-        # 👉 include the real error message so frontend shows something useful
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to generate explanation: {e}",
-        )
-
-    if not explanation_text:
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to generate explanation: empty response from model",
-        )
-
-    return ExplainResponse(explanation=explanation_text)
-
-
-@router.post("/refine", response_model=RefineResponse)
-async def refine_file(req: RefineRequest):
-    """
-    Take a single generated file + user instructions and return a refined version
-    of that file only (same format, no extra commentary).
-    """
-    if not req.content.strip():
-        raise HTTPException(status_code=400, detail="File content is empty")
-
-    if not req.instructions.strip():
-        raise HTTPException(status_code=400, detail="Instructions cannot be empty")
-
-    refine_prompt = f"""
-You are InfraGenie, a DevOps assistant.
-
-The user will give you:
-- An existing configuration file (Dockerfile, YAML, Terraform, CI pipeline, etc.)
-- Some instructions on how they want it changed.
-
-You MUST:
-- Return ONLY the updated file content.
-- Preserve the original format and structure (same language, same file type).
-- Do NOT add explanations, comments about what you changed, or markdown fences.
-- If something is unclear, make a safe reasonable assumption.
-
-File name: {req.filename}
-Label: {req.label or ""}
-
-Current file content:
-----------------
-{req.content}
-----------------
-
-User instructions:
-----------------
-{req.instructions}
-----------------
-"""
-
-    try:
-        completion = await generation_service.openai_client.chat.completions.create(  # if you have a shared client
+        completion = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a precise DevOps assistant. You ONLY output valid config files, no explanations.",
+                    "content": "You are a DevOps expert who explains config files in simple language.",
                 },
-                {"role": "user", "content": refine_prompt},
+                {"role": "user", "content": user_prompt},
             ],
-            temperature=0.2,
+            temperature=0.3,
         )
-        updated = completion.choices[0].message.content.strip()
+
+        explanation_text = (completion.choices[0].message.content or "").strip()
+
+        if not explanation_text:
+            # Model responded but with empty content
+            return ExplainResponse(
+                explanation=(
+                    "InfraGenie tried to generate an explanation, "
+                    "but the AI returned an empty response. "
+                    "Please try again in a moment."
+                )
+            )
+
+        return ExplainResponse(explanation=explanation_text)
+
     except Exception as e:
-        logger.exception("Refine error")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to refine file: {e}",
+        # Log full stack trace for you in Render logs
+        logger.exception("Explain error")
+
+        # But never throw 500 to the frontend – send a human-friendly message instead
+        return ExplainResponse(
+            explanation=(
+                "InfraGenie couldn't generate an AI explanation right now.\n\n"
+                "This is usually due to a temporary AI service or configuration issue.\n"
+                "If you are the developer, check the backend logs on Render for details:\n"
+                f"{type(e).__name__}: {e}"
+            )
         )
 
-    if not updated:
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to refine file: empty response from model",
-        )
-
-    return RefineResponse(updated_content=updated)
 
 @router.post("/bundle")
 async def generate_infra_bundle(payload: GenerateRequest):
