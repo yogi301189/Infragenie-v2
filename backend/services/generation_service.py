@@ -736,28 +736,6 @@ variable "instance_type" {
             "main.tf": main_tf,
             "outputs.tf": outputs_tf,
         }
-
-    # ---------------------- Monitoring ---------------------- #
-
-    def _generate_monitoring_configs(self) -> Dict[str, str]:
-        prometheus_scrape = (
-            "scrape_configs:\n"
-            "  - job_name: 'infragenie-app'\n"
-            "    static_configs:\n"
-            "      - targets: ['app-service.default.svc.cluster.local:5000']\n"
-        )
-
-        grafana_dashboard = (
-            "{\n"
-            '  "title": "InfraGenie App Dashboard",\n'
-            '  "panels": []\n'
-            "}\n"
-        )
-
-        return {
-            "prometheus-scrape-config.yaml": prometheus_scrape,
-            "grafana-dashboard.json": grafana_dashboard,
-        }
     # ---------------------- README.md ---------------------- #
 
     def _generate_readme(
@@ -823,7 +801,15 @@ variable "instance_type" {
         if has_terraform:
             lines.append("- ✅ Terraform infrastructure under `infra/terraform/`.")
         if not any(
-            [has_dockerfile, has_cicd, has_k8s, has_helm, has_argocd, has_monitoring, has_terraform]
+            [
+                has_dockerfile,
+                has_cicd,
+                has_k8s,
+                has_helm,
+                has_argocd,
+                has_monitoring,
+                has_terraform,
+            ]
         ):
             lines.append("- ℹ️ No DevOps assets were generated for this configuration.")
         lines.append("")
@@ -834,11 +820,11 @@ variable "instance_type" {
         lines.append("- Docker installed locally.")
         lines.append("- A Git repository for your application code.")
         if has_k8s or has_helm or has_argocd:
-            lines.append("- A Kubernetes cluster (local or cloud) and `kubectl` configured.")
+            lines.append("- A Kubernetes cluster and `kubectl` configured.")
         if has_helm:
             lines.append("- Helm CLI installed.")
         if has_argocd:
-            lines.append("- ArgoCD installed on your cluster (with access to your Git repo).")
+            lines.append("- ArgoCD installed and pointed to your Git repo.")
         if has_terraform:
             lines.append("- Terraform CLI installed and AWS credentials configured.")
         lines.append("")
@@ -981,9 +967,35 @@ variable "instance_type" {
         )
         lines.append("")
         lines.append(
-            "InfraGenie is meant to give you a **jump start**. Tweak, delete, or extend any file to match your real-world setup."
+            "InfraGenie is meant to give you a **jump start**. "
+            "Tweak, delete, or extend any file to match your real-world setup."
         )
         lines.append("")
 
         return "\n".join(lines)
+
+    # ---------------------- Monitoring ---------------------- #
+
+    def _generate_monitoring_configs(self) -> Dict[str, str]:
+        prometheus_scrape = (
+            "scrape_configs:\n"
+            "  - job_name: 'infragenie-app'\n"
+            "    static_configs:\n"
+            "      - targets: ['app-service.default.svc.cluster.local:5000']\n"
+        )
+
+        grafana_dashboard = (
+            "{\n"
+            '  "title": "InfraGenie App Dashboard",\n'
+            '  "panels": []\n'
+            "}\n"
+        )
+
+        return {
+            "prometheus-scrape-config.yaml": prometheus_scrape,
+            "grafana-dashboard.json": grafana_dashboard,
+        }
+   
+
+   
 
