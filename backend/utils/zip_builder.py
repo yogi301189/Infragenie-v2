@@ -23,6 +23,9 @@ def build_zip_from_result(result: Dict[str, Any]) -> io.BytesIO:
         argocd_apps: Optional[Dict[str, str]] = result.get("argocd_app")
         terraform_configs: Optional[Dict[str, Dict[str, str]]] = result.get("terraform_configs")
         monitoring_configs: Optional[Dict[str, str]] = result.get("monitoring_configs")
+        # README guide
+        if result.get("readme_md"):
+            zf.writestr("README.md", result["readme_md"])
 
         # ------------------- Dockerfile -------------------
         if dockerfile:

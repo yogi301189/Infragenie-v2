@@ -51,6 +51,7 @@ class GenerateResponse(BaseModel):
     terraform_configs: Optional[Dict[str, Dict[str, str]]] = None
     raw: Optional[Dict[str, Any]] = None
     explanation: Optional[str] = None
+    readme_md: Optional[str] = None
 
 
 class BundlePayload(BaseModel):
