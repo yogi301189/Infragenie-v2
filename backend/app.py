@@ -22,6 +22,7 @@ def create_app() -> FastAPI:
         "http://127.0.0.1:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://app.getinfragenie.com",
         "https://infragenie-devops.vercel.app",  # Vercel frontend
         "https://getinfragenie.com",             # your custom domain (if used)
         # "https://www.getinfragenie.com",       # add this if you use www
