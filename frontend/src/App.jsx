@@ -108,6 +108,38 @@ export default function App() {
           </section>
         </div>
       </section>
+<section className="section section-tight how-it-works">
+  <h2 className="section-title">How InfraGenie fits into your workflow</h2>
+  <p className="section-subtitle">
+    You don&apos;t have to throw away your existing tools. InfraGenie just
+    jump-starts the boring setup.
+  </p>
+
+  <div className="how-grid">
+    <div className="how-card">
+      <h3>1. Describe your app</h3>
+      <p>
+        Tell InfraGenie your language, framework, CI/CD preference, cloud
+        provider, and any extra context like &quot;Swiggy-style food delivery app&quot;.
+      </p>
+    </div>
+    <div className="how-card">
+      <h3>2. Generate the DevOps bundle</h3>
+      <p>
+        InfraGenie creates Dockerfile, CI/CD pipeline, Kubernetes manifests,
+        ArgoCD apps, Terraform presets, and a README — all visible in the
+        right-hand viewer.
+      </p>
+    </div>
+    <div className="how-card">
+      <h3>3. Refine & commit</h3>
+      <p>
+        Use AI explanation to understand each file, tweak anything with
+        &quot;Refine file&quot;, then download the ZIP and push it to your Git repo.
+      </p>
+    </div>
+  </div>
+</section>
 
       <FeaturesSection />
       <WhoIsItFor />
