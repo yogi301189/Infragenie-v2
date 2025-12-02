@@ -10,7 +10,7 @@ import WhoIsItFor from "./components/WhoIsItFor.jsx"
 import FeaturesSection from "./components/FeaturesSection.jsx"
 import PricingSection from "./components/PricingSection.jsx"
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://api.getinfragenie.com"
 
 export default function App() {
   const [output, setOutput] = useState(null)
