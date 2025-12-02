@@ -301,3 +301,75 @@ async def generate_infra_bundle(payload: GenerateRequest):
             status_code=500,
             detail="Internal server error while generating bundle.",
         )
+@router.post("/refine", response_model=RefineResponse)
+async def refine_file(req: RefineRequest):
+    """
+    Take a single generated file + user instructions and return a refined version
+    of that file only (same format, no extra commentary).
+    """
+    if not req.content.strip():
+        raise HTTPException(status_code=400, detail="File content is empty")
+
+    if not req.instructions.strip():
+        raise HTTPException(status_code=400, detail="Instructions cannot be empty")
+
+    refine_prompt = f"""
+You are InfraGenie, a DevOps assistant.
+
+The user will give you:
+- An existing configuration file (Dockerfile, YAML, Terraform, CI pipeline, etc.)
+- Some instructions on how they want it changed.
+
+You MUST:
+- Return ONLY the updated file content.
+- Preserve the original format and structure (same language, same file type).
+- Do NOT add explanations, comments about what you changed, or markdown fences.
+- If something is unclear, make a safe reasonable assumption.
+
+File name: {req.filename}
+Label: {req.label or ""}
+
+Current file content:
+----------------
+{req.content}
+----------------
+
+User instructions:
+----------------
+{req.instructions}
+----------------
+"""
+
+    try:
+        # Use the SAME global OpenAI client used by /explain
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a precise DevOps assistant. "
+                        "You ONLY output valid config files, no explanations."
+                    ),
+                },
+                {"role": "user", "content": refine_prompt},
+            ],
+            temperature=0.2,
+        )
+
+        updated = completion.choices[0].message.content.strip()
+
+    except Exception as e:
+        logger.exception("Refine error")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to refine file: {e}",
+        )
+
+    if not updated:
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to refine file: empty response from model",
+        )
+
+    return RefineResponse(updated_content=updated)
