@@ -1,4 +1,4 @@
-# backend/utils/zip_builder.py
+  # backend/utils/zip_builder.py
 
 import io
 import zipfile
@@ -68,13 +68,7 @@ def build_zip_from_result(result: Dict[str, Any]) -> io.BytesIO:
                     zf.writestr(f"infra/terraform/{preset}/{filename}", content)
 
 
-        # ------------------- PRODUCTION.md ----------------
-        prod_md_path = DOCS_TEMPLATE_DIR / "PRODUCTION.md"
-        if prod_md_path.exists():
-            zf.writestr(
-                "docs/PRODUCTION.md",
-                prod_md_path.read_text(encoding="utf-8"),
-            )
+       
 
         # ------------------- Diagrams ---------------------
         for fname in ["architecture-diagram.png", "pipeline-sequence.png"]:
@@ -82,21 +76,7 @@ def build_zip_from_result(result: Dict[str, Any]) -> io.BytesIO:
             if fpath.exists():
                 zf.write(fpath, arcname=f"docs/{fname}")
 
-        # ------------------- README -----------------------
-        readme = (
-            "# InfraGenie Bundle\n\n"
-            "This ZIP was generated automatically by InfraGenie.\n\n"
-            "## Contains (depending on your options):\n"
-            "- Dockerfile\n"
-            "- ci-cd/* (GitHub Actions / Jenkinsfile / GitLab CI)\n"
-            "- k8s/*.yaml\n"
-            "- helm/* (if Helm selected)\n"
-            "- gitops/*.yaml (if GitOps enabled)\n"
-            "- monitoring/* (if monitoring enabled)\n"
-            "- docs/PRODUCTION.md (if present)\n"
-            "- docs/*.png (architecture / pipeline diagrams, if present)\n"
-        )
-        zf.writestr("README-INFRAGENIE.md", readme)
+       
 
     zip_buffer.seek(0)
     return zip_buffer
