@@ -3,6 +3,8 @@
 import React, { useMemo, useState, useEffect } from "react";
 import axios from "axios";
 import CodeBlock from "./CodeBlock.jsx";
+import InfraLinesLoader from "./InfraLinesLoader.jsx";
+
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://api.getinfragenie.com";
@@ -15,13 +17,24 @@ export default function OutputPanel({
   bundleLoading
 }) {
   // --- early states ---
+
   if (loading && !output && !error) {
     return (
       <div className="output-card">
-        <p>Generating your Dockerfile, CI/CD, and manifests...</p>
+        <div className="output-card-loading-inner">
+          <div>
+            <h2 className="output-title">Generating your DevOps bundle…</h2>
+            <p className="output-subtitle">
+              InfraGenie is wiring your Dockerfile, CI/CD, Kubernetes, GitOps and
+              monitoring configs.
+            </p>
+          </div>
+          <InfraLinesLoader />
+        </div>
       </div>
     );
   }
+
 
   if (error) {
     return (
