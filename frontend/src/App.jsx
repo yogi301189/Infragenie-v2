@@ -84,6 +84,40 @@ export default function App() {
     <div className="app-root">
       <Navbar />
       <Hero />
+<header className="site-header">
+  <div className="nav-inner">
+    <a href="#top" className="nav-logo">
+      <span className="nav-logo-mark">IG</span>
+      <span className="nav-logo-text">InfraGenie</span>
+    </a>
+
+    <nav className="nav-links">
+      <a href="#features" className="nav-link">Features</a>
+      <a href="#who" className="nav-link">Who it’s for</a>
+      <a href="#pricing" className="nav-link">Pricing</a>
+      <a href="#footer" className="nav-link">Contact</a>
+    </nav>
+
+    <div className="nav-actions">
+      <a
+        href="https://app.getinfragenie.com"
+        className="btn btn-ghost nav-login"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Log in
+      </a>
+      <a
+        href="https://app.getinfragenie.com"
+        className="btn btn-gradient nav-cta"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Launch app
+      </a>
+    </div>
+  </div>
+</header>
 
       {/* Live generator section */}
       <section id="generator-section" className="section section-tight">
@@ -144,6 +178,64 @@ export default function App() {
       <FeaturesSection />
       <WhoIsItFor />
       <PricingSection />
+// App.jsx (bottom of return)
+<footer className="site-footer" id="footer">
+  <div className="footer-inner">
+    <div className="footer-brand">
+      <div className="footer-logo">InfraGenie</div>
+      <p className="footer-tagline">
+        Your AI DevOps copilot for Docker, CI/CD, Kubernetes, GitOps and Terraform.
+      </p>
+    </div>
+
+    <div className="footer-links">
+      <div>
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#who">Who it’s for</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#footer">Contact</a>
+        <a href="mailto:support@getinfragenie.com">Support</a>
+        <a href="#">Changelog (soon)</a>
+      </div>
+      <div>
+        <h4>Connect</h4>
+        <a
+          href="https://github.com/yogi301189/Infragenie-v2"
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub
+        </a>
+        <a
+          href="https://www.linkedin.com"
+          target="_blank"
+          rel="noreferrer"
+        >
+          LinkedIn
+        </a>
+        <a
+          href="https://x.com"
+          target="_blank"
+          rel="noreferrer"
+        >
+          X / Twitter
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div className="footer-bottom">
+    <span>© {new Date().getFullYear()} InfraGenie. All rights reserved.</span>
+    <div className="footer-bottom-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+</footer>
 
       <footer className="footer">
         <span>© {new Date().getFullYear()} InfraGenie. All rights reserved.</span>
