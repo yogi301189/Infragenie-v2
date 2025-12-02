@@ -165,6 +165,15 @@ export default function OutputPanel({
         });
       });
     }
+// 👇 NEW: README / Guide
+    if (result.readme_md) {
+      f.push({
+        id: "readme",
+        label: "README / Guide",
+        filename: "README.md",
+        content: result.readme_md
+      });
+    }
 
     return f;
   }, [output]);
