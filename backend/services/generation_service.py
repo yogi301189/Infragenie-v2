@@ -25,7 +25,7 @@ class GenerationService:
         include_gitops = getattr(payload, "include_gitops", True)
         include_monitoring = getattr(payload, "include_monitoring", False)
         infra_preset = getattr(payload, "infra_preset", "all")  # eks | ec2 | ecs | all | none
-
+    
         logger.info(
             "Starting infra generation",
             extra={
@@ -36,7 +36,29 @@ class GenerationService:
                 "cloud_provider": cloud_provider,
             },
         )
+    async def generate_ai_thick(self, payload: Any) -> Dict[str, Any]:
+        """
+        AI Thick-Mode generation (Labs / Pro mode).
 
+        For now, this is just a thin wrapper around the existing rule-based
+        `generate` method so that the API shape is stable and the frontend toggle
+        works without changing behaviour.
+
+        Later:
+        - Build a rich prompt from `payload`
+        - Call OpenAI with a JSON schema
+        - Return the parsed dict in the same shape as `generate()`.
+        """
+        logger.info(
+            "AI Thick-Mode generation (stub) – falling back to rule-based",
+            extra={
+                "language": getattr(payload, "language", None),
+                "framework": getattr(payload, "framework", None),
+                "cicd_tool": getattr(payload, "cicd_tool", None),
+                "deploy_target": getattr(payload, "deploy_target", None),
+            },
+        )
+        return await self.generate(payload)
         # ---------------- Dockerfile ----------------
         dockerfile = self._generate_dockerfile(language, framework)
 

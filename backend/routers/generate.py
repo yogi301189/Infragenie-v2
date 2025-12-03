@@ -35,7 +35,7 @@ class GenerateRequest(BaseModel):
     include_monitoring: bool = False
     infra_preset: Optional[str] = "all"     # "eks" | "ec2-k3s" | "ecs-fargate" | "all" | "none"
     extra_context: Optional[str] = None     # free-text description of the app
-    
+    mode: str = "rule_based"
 
 class GenerateResponse(BaseModel):
     """
@@ -171,11 +171,23 @@ async def generate_infra(payload: GenerateRequest) -> GenerateResponse:
                 "framework": payload.framework,
                 "cicd_tool": payload.cicd_tool,
                 "deploy_target": payload.deploy_target,
+                "mode": payload.mode,
             },
         )
 
-        result_dict = await generation_service.generate(payload)
+        # NEW: switchable generation mode
+        mode = (payload.mode or "rule_based").lower()
+
+        if mode == "ai_thick":
+            # For now, this just calls the same rule-based generator.
+            # Later we’ll plug in the AI Thick-Mode implementation here.
+            result_dict = await generation_service.generate_ai_thick(payload)
+        else:
+            # Existing rule-based generator
+            result_dict = await generation_service.generate(payload)
+
         return GenerateResponse(**result_dict)
+
 
     except ValueError as e:
         logger.warning(f"Bad request for generate_infra: {e}")
