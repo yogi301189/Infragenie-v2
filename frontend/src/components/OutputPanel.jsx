@@ -4,6 +4,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import axios from "axios";
 import CodeBlock from "./CodeBlock.jsx";
 import InfraLinesLoader from "./InfraLinesLoader.jsx";
+import "./InfraLinesLoader.css";
 
 
 const API_BASE_URL =
@@ -20,7 +21,7 @@ export default function OutputPanel({
 
   if (loading && !output && !error) {
     return (
-      <div className="output-card">
+      <div className="output-card" style={{ minHeight: "320px" }}>
         <div className="output-card-loading-inner">
           <div>
             <h2 className="output-title">Generating your DevOps bundle…</h2>

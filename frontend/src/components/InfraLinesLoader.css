@@ -132,6 +132,19 @@
   top: 36%;
   animation: infra-line-draw 0.7s ease-out 0.85s forwards;
 }
+.output-card {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.output-card-loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
 
 /* Keyframes */
 
