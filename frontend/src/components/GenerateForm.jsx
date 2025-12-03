@@ -12,9 +12,12 @@ export default function GenerateForm({ onGenerate, loading }) {
   const [includeGitops, setIncludeGitops] = useState(true)
   const [includeMonitoring, setIncludeMonitoring] = useState(false)
   const [extraContext, setExtraContext] = useState("")
+  const [proMode, setProMode] = useState(false);
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (loading) return;
+
     const payload = {
       language,
       framework,
@@ -25,6 +28,7 @@ export default function GenerateForm({ onGenerate, loading }) {
       include_monitoring: includeMonitoring,
       infra_preset: infraPreset,
       extra_context: extraContext || null
+      mode: proMode ? "ai_thick" : "rule_based",
     }
     onGenerate(payload)
   }
@@ -103,6 +107,26 @@ export default function GenerateForm({ onGenerate, loading }) {
           Include monitoring (Prometheus/Grafana)
         </label>
       </div>
+      <div className="form-row pro-toggle-row">
+      <div className="pro-toggle-text">
+      <span className="pro-label">Pro / Labs mode</span>
+      <span className="pro-sub">
+        Use AI full-stack bundle generation (beta). Currently behaves the same
+        as standard mode but will roll out smarter generation here first.
+      </span>
+      </div>
+      <button
+      type="button"
+      className={"pro-toggle-pill" + (proMode ? " pro-toggle-pill-active" : "")}
+      onClick={() => setProMode((prev) => !prev)}
+    >
+      <span className="pro-toggle-thumb" />
+      <span className="pro-toggle-text-pill">
+        {proMode ? "AI Thick mode ON" : "Standard mode"}
+      </span>
+      </button>
+      </div>
+
 {/* Infrastructure preset */}
 <div className="form-group">
   <label htmlFor="infraPreset">Infrastructure preset (Terraform)</label>
