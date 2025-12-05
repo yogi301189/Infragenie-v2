@@ -1,5 +1,3 @@
-# backend/services/generation_service.py
-
 from typing import Any, Dict, Optional
 
 from utils.logger import get_logger
@@ -25,7 +23,7 @@ class GenerationService:
         include_gitops = getattr(payload, "include_gitops", True)
         include_monitoring = getattr(payload, "include_monitoring", False)
         infra_preset = getattr(payload, "infra_preset", "all")  # eks | ec2 | ecs | all | none
-    
+
         logger.info(
             "Starting infra generation",
             extra={
@@ -36,34 +34,11 @@ class GenerationService:
                 "cloud_provider": cloud_provider,
             },
         )
-    async def generate_ai_thick(self, payload: Any) -> Dict[str, Any]:
-        """
-        AI Thick-Mode generation (Labs / Pro mode).
 
-        For now, this is just a thin wrapper around the existing rule-based
-        `generate` method so that the API shape is stable and the frontend toggle
-        works without changing behaviour.
-
-        Later:
-        - Build a rich prompt from `payload`
-        - Call OpenAI with a JSON schema
-        - Return the parsed dict in the same shape as `generate()`.
-        """
-        logger.info(
-            "AI Thick-Mode generation (stub) – falling back to rule-based",
-            extra={
-                "language": getattr(payload, "language", None),
-                "framework": getattr(payload, "framework", None),
-                "cicd_tool": getattr(payload, "cicd_tool", None),
-                "deploy_target": getattr(payload, "deploy_target", None),
-            },
-        )
-        return await self.generate(payload)
         # ---------------- Dockerfile ----------------
         dockerfile = self._generate_dockerfile(language, framework)
 
         # ---------------- CI/CD ----------------
-        # We want both filename + content, but API returns only content as string
         cicd_data = self._generate_cicd(cicd_tool, language, framework)
         cicd_content = cicd_data.get("content", "")
         cicd_meta = cicd_data  # full dict: {"filename": ..., "content": ...}
@@ -107,31 +82,8 @@ class GenerationService:
                 "infra_preset": infra_preset,
             }
         }
-        # ---------------- README (simple) ----------------
-        readme_md = self._generate_readme_simple(
-            language=language,
-            framework=framework,
-            cicd_tool=cicd_tool,
-            deploy_target=deploy_target,
-            cloud_provider=cloud_provider,
-            infra_preset=infra_preset,
-        )
 
-        return {
-            "dockerfile": dockerfile,
-            "cicd_config": cicd_content,      # string for API / frontend
-            "cicd_meta": cicd_meta,           # dict for ZIP builder
-            "k8s_manifests": k8s_manifests,
-            "helm_chart": helm_chart,
-            "argocd_app": argocd_app,
-            "monitoring_configs": monitoring_configs,
-            "terraform_configs": terraform_configs,
-            "raw": raw,
-            "readme_md": readme_md,
-
-        }
-
-# ---------------- README (rule-based) ----------------
+        # ---------------- README (rule-based) ----------------
         readme_md = self._generate_readme(
             language=language,
             framework=framework,
@@ -160,6 +112,31 @@ class GenerationService:
             "raw": raw,
             "readme_md": readme_md,
         }
+
+    async def generate_ai_thick(self, payload: Any) -> Dict[str, Any]:
+        """
+        AI Thick-Mode generation (Labs / Pro mode).
+
+        For now, this is just a thin wrapper around the existing rule-based
+        `generate` method so that the API shape is stable and the frontend toggle
+        works without changing behaviour.
+
+        Later:
+        - Build a rich prompt from `payload`
+        - Call OpenAI with a JSON schema
+        - Return the parsed dict in the same shape as `generate()`.
+        """
+        logger.info(
+            "AI Thick-Mode generation (stub) – falling back to rule-based",
+            extra={
+                "language": getattr(payload, "language", None),
+                "framework": getattr(payload, "framework", None),
+                "cicd_tool": getattr(payload, "cicd_tool", None),
+                "deploy_target": getattr(payload, "deploy_target", None),
+            },
+        )
+        return await self.generate(payload)
+
     # ---------------------- Dockerfile ---------------------- #
 
     def _generate_dockerfile(self, language: str, framework: Optional[str]) -> str:
@@ -227,7 +204,7 @@ class GenerationService:
         self,
         cicd_tool: str,
         language: str,
-        framework: Optional[str]
+        framework: Optional[str],
     ) -> Dict[str, str]:
         """
         Returns:
@@ -347,7 +324,9 @@ class GenerationService:
     # ---------------------- Kubernetes ---------------------- #
 
     def _generate_k8s_manifests(
-        self, language: str, framework: Optional[str]
+        self,
+        language: str,
+        framework: Optional[str],
     ) -> Dict[str, str]:
         deployment_yaml = (
             "apiVersion: apps/v1\n"
@@ -406,7 +385,6 @@ class GenerationService:
     ) -> Dict[str, str]:
         """
         Simple Helm chart with values + deployment + service.
-        (You can replace this later with your more advanced multi-env version.)
         """
         chart_yaml = """apiVersion: v2
 name: infragenie-app
@@ -769,6 +747,29 @@ variable "instance_type" {
             "main.tf": main_tf,
             "outputs.tf": outputs_tf,
         }
+
+    # ---------------------- Monitoring ---------------------- #
+
+    def _generate_monitoring_configs(self) -> Dict[str, str]:
+        prometheus_scrape = (
+            "scrape_configs:\n"
+            "  - job_name: 'infragenie-app'\n"
+            "    static_configs:\n"
+            "      - targets: ['app-service.default.svc.cluster.local:5000']\n"
+        )
+
+        grafana_dashboard = (
+            "{\n"
+            '  "title": "InfraGenie App Dashboard",\n'
+            '  "panels": []\n'
+            "}\n"
+        )
+
+        return {
+            "prometheus-scrape-config.yaml": prometheus_scrape,
+            "grafana-dashboard.json": grafana_dashboard,
+        }
+
     # ---------------------- README.md ---------------------- #
 
     def _generate_readme(
@@ -796,7 +797,7 @@ variable "instance_type" {
         fw_label = (framework or "").capitalize() if framework else ""
         stack_label = f"{lang_label} {fw_label}".strip()
 
-        lines = []
+        lines: list[str] = []
 
         lines.append(f"# InfraGenie DevOps Bundle for {stack_label or 'your app'}")
         lines.append("")
@@ -1006,72 +1007,3 @@ variable "instance_type" {
         lines.append("")
 
         return "\n".join(lines)
-
-    # ---------------------- Monitoring ---------------------- #
-
-    def _generate_monitoring_configs(self) -> Dict[str, str]:
-        prometheus_scrape = (
-            "scrape_configs:\n"
-            "  - job_name: 'infragenie-app'\n"
-            "    static_configs:\n"
-            "      - targets: ['app-service.default.svc.cluster.local:5000']\n"
-        )
-
-        grafana_dashboard = (
-            "{\n"
-            '  "title": "InfraGenie App Dashboard",\n'
-            '  "panels": []\n'
-            "}\n"
-        )
-
-        return {
-            "prometheus-scrape-config.yaml": prometheus_scrape,
-            "grafana-dashboard.json": grafana_dashboard,
-        }
-   
-    # ---------------------- README.md ---------------------- #
-
-    def _generate_readme_simple(
-        self,
-        *,
-        language: str,
-        framework: Optional[str],
-        cicd_tool: str,
-        deploy_target: str,
-        cloud_provider: str,
-        infra_preset: str,
-    ) -> str:
-        """
-        Very simple, static README generator just to prove the plumbing works.
-        We can make it richer later.
-        """
-        lang_label = (language or "app").capitalize()
-        fw_label = (framework or "").capitalize() if framework else ""
-        stack_label = f"{lang_label} {fw_label}".strip() or "your app"
-
-        return f"""# InfraGenie DevOps Bundle for {stack_label}
-
-This bundle was generated by **InfraGenie** to help you containerize, build,
-and deploy your application on {cloud_provider.upper()}.
-
-## Stack
-
-- Language: {language}
-- Framework: {framework}
-- CI/CD: {cicd_tool}
-- Deploy target: {deploy_target}
-- Cloud provider: {cloud_provider}
-- Infra preset: {infra_preset}
-
-## How to start
-
-1. Build and run the Docker image.
-2. Push the code + Dockerfile + pipeline to your Git repo.
-3. Wire CI/CD (GitHub Actions / Jenkins / GitLab CI).
-4. Deploy using Kubernetes/Helm and (optionally) Terraform.
-
-You can customize this README later directly in your repo.
-"""
-
-   
-
