@@ -9,7 +9,7 @@ export default function PricingSection() {
       <div className="pricing-grid">
         <div className="card pricing-card">
           <h3>Free</h3>
-          <p className="pricing-price">₹0 / month</p>
+          <p className="pricing-price">$0 / month</p>
           <ul className="pricing-list">
             <li>Limited generations per month</li>
             <li>Dockerfile + CI/CD pipeline</li>
@@ -20,7 +20,7 @@ export default function PricingSection() {
 
         <div className="card pricing-card pricing-card-highlight">
           <h3>Pro (Early Access)</h3>
-          <p className="pricing-price">₹499 / month</p>
+          <p className="pricing-price">$9 / month</p>
           <ul className="pricing-list">
             <li>Unlimited generations</li>
             <li>Dockerfile + CI/CD + K8s + Helm</li>
