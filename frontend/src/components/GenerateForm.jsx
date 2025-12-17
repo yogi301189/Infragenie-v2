@@ -38,16 +38,6 @@ export default function GenerateForm({ onGenerate, loading }) {
   return (
     <form className="form-card" onSubmit={handleSubmit}>
       <h2>Describe your stack</h2>
-      <div style={{
-           background: "red",
-           color: "white",
-           padding: "10px",
-           marginBottom: "12px",
-          fontWeight: "bold"
-          }}>
-  🔥 AI MODE TOGGLE SHOULD BE HERE 🔥
-      </div>
-
       <div className="form-row pro-toggle-row pro-toggle-highlight">
       <div className="pro-toggle-text">
       <span className="pro-label">Pro / Labs mode</span>
