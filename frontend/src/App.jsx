@@ -18,6 +18,9 @@ export default function App() {
   const [error, setError] = useState("")
   const [lastPayload, setLastPayload] = useState(null)
   const [bundleLoading, setBundleLoading] = useState(false)
+  const [generationMode, setGenerationMode] = useState("rule_based");
+  const [aiFallback, setAiFallback] = useState(false);
+
 
   const handleGenerate = async (formData) => {
   try {
@@ -26,14 +29,24 @@ export default function App() {
     setOutput(null)
     setLastPayload(formData)
 
+    // Track requested mode
+    setGenerationMode(formData.mode)
+    setAiFallback(false)
+
     const res = await axios.post(
       `${API_BASE_URL}/api/generate`,
       formData,
-      {
-        timeout: 90000 // 90s safety timeout
-      }
+      { timeout: 90000 }
     )
-    setOutput(res.data)
+
+    const data = res.data
+
+    // Detect AI fallback
+    if (formData.mode === "ai_thick" && !data?.raw?.ai_mode) {
+      setAiFallback(true)
+    }
+
+    setOutput(data)
   } catch (err) {
     console.error("Generate error:", err)
 
@@ -42,13 +55,14 @@ export default function App() {
     } else {
       setError(
         err?.response?.data?.detail ||
-          "Something went wrong while generating. Please try again."
+        "Something went wrong while generating. Please try again."
       )
     }
   } finally {
     setLoading(false)
   }
 }
+
 
 
   const handleDownloadBundle = async () => {

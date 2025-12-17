@@ -13,6 +13,8 @@ const API_BASE_URL =
 export default function OutputPanel({
   output,
   error,
+  mode,
+  aiFallback,
   loading,
   onDownloadBundle,
   bundleLoading
@@ -24,7 +26,12 @@ export default function OutputPanel({
       <div className="output-card" style={{ minHeight: "320px" }}>
         <div className="output-card-loading-inner">
           <div>
-            <h2 className="output-title">Generating your DevOps bundle…</h2>
+            <h2 className="output-title">
+                        {mode === "ai_thick"
+                          ? "AI is generating your DevOps bundle…"
+                             : "Generating your DevOps bundle…"}
+           </h2>
+
             <p className="output-subtitle">
               InfraGenie is wiring your Dockerfile, CI/CD, Kubernetes, GitOps and
               monitoring configs.
@@ -373,6 +380,21 @@ export default function OutputPanel({
         <div>
           <h2 className="output-title">Generated DevOps Bundle</h2>
           <p className="output-subtitle">
+            {/* AI / Rule-based status */}
+             {mode === "ai_thick" && (
+              <div className="ai-run-status">
+                 {!aiFallback ? (
+                 <span className="ai-badge ai-badge-success">
+                      ⚡ AI Thick Mode
+                      </span>
+                            ) : (
+                <span className="ai-badge ai-badge-warning">
+                   ⚠ AI fallback → Rule-based output
+                         </span>
+                           )}
+                        </div>
+                      )}
+
             InfraGenie generated <strong>{totalFiles}</strong> files for this run.
           </p>
         </div>

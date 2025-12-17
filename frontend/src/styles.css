@@ -67,6 +67,55 @@ body {
 .nav-link:hover {
   color: #10b981;
 }
+.mode-badge {
+  margin-bottom: 12px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-ai {
+  background: rgba(34, 211, 238, 0.15);
+  color: #22d3ee;
+}
+
+.badge-rule {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+
+.badge-fallback {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+.ai-run-status {
+  margin-top: 0.35rem;
+}
+
+.ai-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.ai-badge-success {
+  background: rgba(34, 211, 238, 0.15);
+  color: #22d3ee;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+}
+
+.ai-badge-warning {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
 
 /* ====== HERO ====== */
 
