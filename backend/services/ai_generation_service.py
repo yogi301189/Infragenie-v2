@@ -32,34 +32,57 @@ class AIGenerationService:
     # PROMPT BUILDER
     # -------------------------------------------------
 
-    def _build_prompt(self, payload):
-        """
-        Builds a rich text prompt describing the stack.
-        """
-        return f"""
-Generate a complete production-ready DevOps bundle for this application.
+    def _build_prompt(self, payload) -> str:
+       return f"""
+You are an API, not a chat assistant.
 
-App stack:
-- Language: {payload.language}
-- Framework: {payload.framework}
-- CI/CD: {payload.cicd_tool}
-- Deploy target: {payload.deploy_target}
-- Cloud provider: {payload.cloud_provider}
-- Infrastructure preset: {payload.infra_preset}
-- GitOps: {payload.include_gitops}
-- Monitoring: {payload.include_monitoring}
+You MUST return ONLY valid JSON.
+NO markdown.
+NO explanation.
+NO comments.
+NO trailing text.
+NO backticks.
 
-Extra context:
-{payload.extra_context or "None"}
+If you violate this, the output will be rejected.
 
-Requirements:
-- All output MUST strictly follow the JSON schema.
-- Use real-world best practices, not toy examples.
-- Use placeholders like <AWS_ACCOUNT_ID>, <IMAGE>, <REPO>.
-- Ensure Terraform modules are minimal but working.
-- README must be polished, human-friendly, structured.
-- No additional prose outside the JSON.
+Return EXACTLY this JSON structure:
+
+{{
+  "dockerfile": "string",
+  "cicd_config": "string",
+  "cicd_meta": {{
+    "filename": "string",
+    "content": "string"
+  }},
+  "k8s_manifests": {{
+    "deployment.yaml": "string",
+    "service.yaml": "string"
+  }} | null,
+  "helm_chart": object | null,
+  "argocd_app": object | null,
+  "monitoring_configs": object | null,
+  "terraform_configs": object | null,
+  "raw": {{
+    "meta": object
+  }},
+  "readme_md": "string"
+}}
+
+Now generate the DevOps bundle for the following app:
+
+Language: {payload.language}
+Framework: {payload.framework}
+CI/CD: {payload.cicd_tool}
+Deploy target: {payload.deploy_target}
+Cloud provider: {payload.cloud_provider}
+Infra preset: {payload.infra_preset}
+Include GitOps: {payload.include_gitops}
+Include Monitoring: {payload.include_monitoring}
+
+REMEMBER:
+RETURN JSON ONLY.
 """
+
 
     # -------------------------------------------------
     # JSON SCHEMA FOR STRUCTURED AI OUTPUT
