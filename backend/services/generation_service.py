@@ -1,5 +1,5 @@
 from typing import Any, Dict, Optional
-
+from services.ai_generation_service import AIGenerationService
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -113,7 +113,7 @@ class GenerationService:
             "readme_md": readme_md,
         }
 
-    from services.ai_generation_service import AIGenerationService
+    
 ai_service = AIGenerationService()
 
 async def generate_ai_thick(self, payload):
