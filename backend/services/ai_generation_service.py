@@ -1,56 +1,32 @@
 # backend/services/ai_generation_service.py
 
+import json
 from openai import OpenAI
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 client = OpenAI()
 
+
 class AIGenerationService:
-
     async def generate_bundle(self, payload):
-        """
-        The heart of AI Thick-Mode.
+        prompt = self._build_prompt(payload)
 
-        Takes the user's entire stack description and asks OpenAI to create
-        a full DevOps bundle — Dockerfile, CI/CD, K8s, Helm, GitOps, Terraform,
-        README, etc.
-        """
+        response = client.responses.create(
+            model="gpt-4.1",
+            input=prompt,
+        )
 
-        user_context = self._build_prompt(payload)
+        text = response.output_text
 
         try:
-            response = client.responses.create(
-                model="gpt-4.1",
-                temperature=0.25,
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": self._schema()
-                },
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are InfraGenie AI Pro Mode — an expert DevOps, SRE, "
-                            "platform engineering and Kubernetes automation assistant. "
-                            "Generate production-quality configurations, not toy examples."
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": user_context
-                    }
-                ]
-            )
+            data = json.loads(text)
+            return data
+        except json.JSONDecodeError:
+            logger.error("AI returned non-JSON output")
+            logger.debug(text)
+            return None
 
-            result = response.output_json
-            logger.info("AI Thick Mode result received.")
-
-            return self._normalize_output(result)
-
-        except Exception as e:
-            logger.exception("AI Thick Mode failed — falling back to rule-based.")
-            return None  # backend will fallback automatically
 
     # -------------------------------------------------
     # PROMPT BUILDER
