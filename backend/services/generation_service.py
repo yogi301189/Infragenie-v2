@@ -13,7 +13,9 @@ class GenerationService:
     Currently rule-based for predictable output.
     Later you can plug in AI via utils.prompts.
     """
-
+    def __init__(self):
+        self.ai_service = AIGenerationService()
+        
     async def generate(self, payload: Any) -> Dict[str, Any]:
         language = getattr(payload, "language", "python")
         framework = getattr(payload, "framework", None)
@@ -34,6 +36,24 @@ class GenerationService:
                 "cloud_provider": cloud_provider,
             },
         )
+    async def generate_ai_thick(self, payload: Any) -> Dict[str, Any]:
+        """
+        AI Thick Mode generation
+        """
+        logger.info("AI Thick Mode: starting full AI generation")
+
+        try:
+            ai_output = await self.ai_service.generate_bundle(payload)
+
+            if ai_output:
+                logger.info("AI Thick Mode: generation successful")
+                return ai_output
+
+        except Exception:
+            logger.exception("AI Thick Mode failed")
+
+        logger.warning("AI Thick Mode failed — falling back to rule-based mode")
+        return await self.generate(payload)
 
         # ---------------- Dockerfile ----------------
         dockerfile = self._generate_dockerfile(language, framework)
@@ -114,18 +134,9 @@ class GenerationService:
         }
 
     
-ai_service = AIGenerationService()
 
-async def generate_ai_thick(self, payload):
-    logger.info("AI Thick Mode: starting full AI generation")
 
-    ai_output = await ai_service.generate_bundle(payload)
-
-    if ai_output:
-        return ai_output
-
-    logger.warning("AI Thick Mode failed — falling back to rule-based mode.")
-    return await self.generate(payload)
+    
 
 
 
