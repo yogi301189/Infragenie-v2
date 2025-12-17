@@ -3,6 +3,8 @@
 import React, { useState } from "react"
 
 export default function GenerateForm({ onGenerate, loading }) {
+  console.log("🔥 GenerateForm rendered");
+
   const [language, setLanguage] = useState("python")
   const [framework, setFramework] = useState("flask")
   const [cicdTool, setCicdTool] = useState("github_actions")
