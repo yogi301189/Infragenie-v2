@@ -9,13 +9,14 @@ class GenerationService:
     """
     Core service that takes a GenerateRequest-like object (from routers.generate)
     and returns all the artefacts InfraGenie can generate.
-
-    Currently rule-based for predictable output.
-    Later you can plug in AI via utils.prompts.
     """
+
     def __init__(self):
         self.ai_service = AIGenerationService()
-        
+
+    # ==========================================================
+    # RULE-BASED GENERATION (ALWAYS RETURNS A DICT)
+    # ==========================================================
     async def generate(self, payload: Any) -> Dict[str, Any]:
         language = getattr(payload, "language", "python")
         framework = getattr(payload, "framework", None)
@@ -24,36 +25,122 @@ class GenerationService:
         cloud_provider = getattr(payload, "cloud_provider", "aws")
         include_gitops = getattr(payload, "include_gitops", True)
         include_monitoring = getattr(payload, "include_monitoring", False)
-        infra_preset = getattr(payload, "infra_preset", "all")  # eks | ec2 | ecs | all | none
+        infra_preset = getattr(payload, "infra_preset", "all")
 
-        logger.info(
-            "Starting infra generation",
-            extra={
+        logger.info("Starting infra generation", extra={
+            "language": language,
+            "framework": framework,
+            "cicd_tool": cicd_tool,
+            "deploy_target": deploy_target,
+            "cloud_provider": cloud_provider,
+        })
+
+        # Dockerfile
+        dockerfile = self._generate_dockerfile(language, framework)
+
+        # CI/CD
+        cicd_meta = self._generate_cicd(cicd_tool, language, framework)
+        cicd_content = cicd_meta.get("content", "")
+
+        # Kubernetes / Helm
+        k8s_manifests = (
+            self._generate_k8s_manifests(language, framework)
+            if deploy_target in ("kubernetes", "helm")
+            else None
+        )
+
+        helm_chart = (
+            self._generate_helm_chart(language, framework)
+            if deploy_target == "helm"
+            else None
+        )
+
+        # GitOps
+        argocd_app = (
+            self._generate_argocd_app(cloud_provider)
+            if include_gitops
+            else None
+        )
+
+        # Monitoring
+        monitoring_configs = (
+            self._generate_monitoring_configs()
+            if include_monitoring
+            else None
+        )
+
+        # Terraform
+        terraform_configs = self._generate_terraform_configs(
+            cloud_provider, infra_preset
+        )
+
+        raw = {
+            "meta": {
                 "language": language,
                 "framework": framework,
                 "cicd_tool": cicd_tool,
                 "deploy_target": deploy_target,
                 "cloud_provider": cloud_provider,
-            },
+                "infra_preset": infra_preset,
+            }
+        }
+
+        readme_md = self._generate_readme(
+            language=language,
+            framework=framework,
+            cicd_tool=cicd_tool,
+            deploy_target=deploy_target,
+            cloud_provider=cloud_provider,
+            infra_preset=infra_preset,
+            has_dockerfile=bool(dockerfile),
+            has_cicd=bool(cicd_content),
+            has_k8s=bool(k8s_manifests),
+            has_helm=bool(helm_chart),
+            has_argocd=bool(argocd_app),
+            has_monitoring=bool(monitoring_configs),
+            has_terraform=bool(terraform_configs),
         )
+
+        return {
+            "dockerfile": dockerfile,
+            "cicd_config": cicd_content,
+            "cicd_meta": cicd_meta,
+            "k8s_manifests": k8s_manifests,
+            "helm_chart": helm_chart,
+            "argocd_app": argocd_app,
+            "monitoring_configs": monitoring_configs,
+            "terraform_configs": terraform_configs,
+            "raw": raw,
+            "readme_md": readme_md,
+        }
+
+    # ==========================================================
+    # AI THICK MODE
+    # ==========================================================
     async def generate_ai_thick(self, payload: Any) -> Dict[str, Any]:
-        """
-        AI Thick Mode generation
-        """
         logger.info("AI Thick Mode: starting full AI generation")
 
         try:
             ai_output = await self.ai_service.generate_bundle(payload)
 
-            if ai_output:
+            if isinstance(ai_output, dict):
                 logger.info("AI Thick Mode: generation successful")
                 return ai_output
+
+            logger.warning("AI output invalid, falling back")
 
         except Exception:
             logger.exception("AI Thick Mode failed")
 
-        logger.warning("AI Thick Mode failed — falling back to rule-based mode")
+        logger.warning("Falling back to rule-based generation")
         return await self.generate(payload)
+
+    # ==========================================================
+    # BELOW THIS: HELPERS (UNCHANGED)
+    # ==========================================================
+    # Dockerfile, CI/CD, K8s, Helm, ArgoCD, Terraform, Monitoring, README
+    # (Your existing helper methods stay EXACTLY the same)
+
 
         # ---------------- Dockerfile ----------------
         dockerfile = self._generate_dockerfile(language, framework)
