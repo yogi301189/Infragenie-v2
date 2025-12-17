@@ -1,6 +1,8 @@
 # backend/services/ai_generation_service.py
 
 import json
+from typing import Any, Dict, Optional
+
 from openai import OpenAI
 from utils.logger import get_logger
 
@@ -9,70 +11,111 @@ client = OpenAI()
 
 
 class AIGenerationService:
-    async def generate_bundle(self, payload):
+    """
+    Handles AI-based DevOps bundle generation.
+    AI output is ALWAYS normalized to match rule-based GenerateResponse.
+    """
+
+    # -------------------------------------------------
+    # PUBLIC ENTRY
+    # -------------------------------------------------
+
+    async def generate_bundle(self, payload) -> Optional[Dict[str, Any]]:
         prompt = self._build_prompt(payload)
 
-        response = client.responses.create(
-            model="gpt-4.1",
-            input=prompt,
-        )
+        try:
+            response = client.responses.create(
+                model="gpt-4.1",
+                input=prompt,
+            )
+        except Exception:
+            logger.exception("AI request failed")
+            return None
 
         text = response.output_text
 
         try:
-            data = json.loads(text)
-            return data
+            ai_json = json.loads(text)
         except json.JSONDecodeError:
             logger.error("AI returned non-JSON output")
             logger.debug(text)
             return None
 
+        try:
+            normalized = self._normalize_output(ai_json)
+            return normalized
+        except Exception:
+            logger.exception("Failed to normalize AI output")
+            return None
 
     # -------------------------------------------------
     # PROMPT BUILDER
     # -------------------------------------------------
 
     def _build_prompt(self, payload) -> str:
-       return f"""
-You are an API, not a chat assistant.
+        """
+        Hard-restricted system prompt.
+        Forces JSON-only output matching rule-based response.
+        """
+        return f"""
+You are a backend API.
 
 You MUST return ONLY valid JSON.
 NO markdown.
-NO explanation.
+NO explanations.
 NO comments.
 NO trailing text.
 NO backticks.
 
-If you violate this, the output will be rejected.
+If the output is not strict JSON, it will be rejected.
 
-Return EXACTLY this JSON structure:
+Return EXACTLY this structure:
 
 {{
   "dockerfile": "string",
-  "cicd_config": "string",
-  "cicd_meta": {{
-    "filename": "string",
-    "content": "string"
-  }},
-  "k8s_manifests": {{
+
+  "cicd": "string | null",
+
+  "k8s": {{
     "deployment.yaml": "string",
     "service.yaml": "string"
   }} | null,
-  "helm_chart": object | null,
-  "argocd_app": object | null,
-  "monitoring_configs": object | null,
-  "terraform_configs": object | null,
-  "raw": {{
-    "meta": object
-  }},
+
+  "helm": {{
+    "Chart.yaml": "string",
+    "values.yaml": "string",
+    "templates": {{
+      "deployment.yaml": "string",
+      "service.yaml": "string"
+    }}
+  }} | null,
+
+  "argocd": {{
+    "app.yaml": "string"
+  }} | null,
+
+  "monitoring": {{
+    "prometheus.yaml": "string",
+    "grafana.json": "string"
+  }} | null,
+
+  "terraform": {{
+    "stack_name": {{
+      "provider.tf": "string",
+      "main.tf": "string",
+      "variables.tf": "string",
+      "outputs.tf": "string"
+    }}
+  }} | null,
+
   "readme_md": "string"
 }}
 
-Now generate the DevOps bundle for the following app:
+Generate a DevOps bundle for:
 
 Language: {payload.language}
 Framework: {payload.framework}
-CI/CD: {payload.cicd_tool}
+CI/CD tool: {payload.cicd_tool}
 Deploy target: {payload.deploy_target}
 Cloud provider: {payload.cloud_provider}
 Infra preset: {payload.infra_preset}
@@ -83,53 +126,70 @@ REMEMBER:
 RETURN JSON ONLY.
 """
 
-
     # -------------------------------------------------
-    # JSON SCHEMA FOR STRUCTURED AI OUTPUT
-    # -------------------------------------------------
-
-    def _schema(self):
-        """
-        JSON schema describing the AI output format.
-        Must match existing GenerateResponse structure.
-        """
-        return {
-            "type": "object",
-            "properties": {
-                "dockerfile": {"type": "string"},
-                "cicd": {"type": "string"},
-                "k8s": {"type": "object"},
-                "helm": {"type": "object"},
-                "argocd": {"type": "object"},
-                "monitoring": {"type": "object"},
-                "terraform": {"type": "object"},
-                "readme_md": {"type": "string"}
-            },
-            "required": ["dockerfile"]
-        }
-
-    # -------------------------------------------------
-    # NORMALIZE AI OUTPUT TO MATCH RULE-BASED STRUCTURE
+    # NORMALIZER (CRITICAL)
     # -------------------------------------------------
 
-    def _normalize_output(self, ai):
+    def _normalize_output(self, ai: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Converts AI JSON into the exact shape the frontend expects.
+        Converts AI JSON into the EXACT structure produced by rule-based generator.
+        This guarantees GenerateResponse validation passes.
         """
+
+        # ---- CI/CD ----
+        cicd_content = ai.get("cicd")
+
+        # ---- Kubernetes ----
+        k8s_manifests = ai.get("k8s") if isinstance(ai.get("k8s"), dict) else None
+
+        # ---- Helm: flatten to Dict[str, str] ----
+        helm_chart = None
+        helm = ai.get("helm")
+        if isinstance(helm, dict):
+            helm_chart = {}
+            for key, value in helm.items():
+                if isinstance(value, dict):
+                    for fname, content in value.items():
+                        helm_chart[f"{key}/{fname}"] = str(content)
+                else:
+                    helm_chart[key] = str(value)
+
+        # ---- ArgoCD: Dict[str, str] ----
+        argocd_app = None
+        argocd = ai.get("argocd")
+        if isinstance(argocd, dict):
+            argocd_app = {
+                name: str(content) for name, content in argocd.items()
+            }
+
+        # ---- Terraform: Dict[str, Dict[str, str]] ----
+        terraform_configs = None
+        terraform = ai.get("terraform")
+        if isinstance(terraform, dict):
+            terraform_configs = {}
+            for stack, files in terraform.items():
+                if isinstance(files, dict):
+                    terraform_configs[stack] = {
+                        fname: str(body) for fname, body in files.items()
+                    }
+                else:
+                    terraform_configs[stack] = {"main.tf": str(files)}
+
         return {
             "dockerfile": ai.get("dockerfile"),
-            "cicd_config": ai.get("cicd"),
+
+            "cicd_config": cicd_content,
             "cicd_meta": {
                 "filename": "pipeline.yaml",
-                "content": ai.get("cicd")
-            } if ai.get("cicd") else None,
+                "content": cicd_content,
+            } if cicd_content else None,
 
-            "k8s_manifests": ai.get("k8s"),
-            "helm_chart": ai.get("helm"),
-            "argocd_app": ai.get("argocd"),
+            "k8s_manifests": k8s_manifests,
+            "helm_chart": helm_chart,
+            "argocd_app": argocd_app,
             "monitoring_configs": ai.get("monitoring"),
-            "terraform_configs": ai.get("terraform"),
+            "terraform_configs": terraform_configs,
 
             "raw": {"ai_mode": True},
-            "readme_md": ai.get("readme_md", "# AI README\n(No README provided)")
+            "readme_md": ai.get("readme_md") or "# AI README\n(No README provided)",
         }
