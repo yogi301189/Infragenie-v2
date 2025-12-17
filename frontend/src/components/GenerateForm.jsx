@@ -42,8 +42,7 @@ export default function GenerateForm({ onGenerate, loading }) {
       <div className="pro-toggle-text">
       <span className="pro-label">Pro / Labs mode</span>
       <span className="pro-sub">
-        Use AI full-stack bundle generation (beta). Currently behaves the same
-        as standard mode but will roll out smarter generation here first.
+        Use AI full-stack bundle generation (beta).
       </span>
       </div>
       <button
