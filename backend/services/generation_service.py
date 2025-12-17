@@ -113,29 +113,21 @@ class GenerationService:
             "readme_md": readme_md,
         }
 
-    async def generate_ai_thick(self, payload: Any) -> Dict[str, Any]:
-        """
-        AI Thick-Mode generation (Labs / Pro mode).
+    from services.ai_generation_service import AIGenerationService
+ai_service = AIGenerationService()
 
-        For now, this is just a thin wrapper around the existing rule-based
-        `generate` method so that the API shape is stable and the frontend toggle
-        works without changing behaviour.
+async def generate_ai_thick(self, payload):
+    logger.info("AI Thick Mode: starting full AI generation")
 
-        Later:
-        - Build a rich prompt from `payload`
-        - Call OpenAI with a JSON schema
-        - Return the parsed dict in the same shape as `generate()`.
-        """
-        logger.info(
-            "AI Thick-Mode generation (stub) – falling back to rule-based",
-            extra={
-                "language": getattr(payload, "language", None),
-                "framework": getattr(payload, "framework", None),
-                "cicd_tool": getattr(payload, "cicd_tool", None),
-                "deploy_target": getattr(payload, "deploy_target", None),
-            },
-        )
-        return await self.generate(payload)
+    ai_output = await ai_service.generate_bundle(payload)
+
+    if ai_output:
+        return ai_output
+
+    logger.warning("AI Thick Mode failed — falling back to rule-based mode.")
+    return await self.generate(payload)
+
+
 
     # ---------------------- Dockerfile ---------------------- #
 
