@@ -2,6 +2,7 @@
   position: relative;
   width: 180px;
   height: 180px;
+  flex-shrink: 0; /* 🟢 THIS FIXES THE ANIMATION */
   border-radius: 999px;
   background: radial-gradient(circle at 50% 40%, #020617 0%, #020617 35%, #020617 60%, #020617 100%);
   display: flex;
@@ -9,6 +10,7 @@
   justify-content: center;
   overflow: hidden;
 }
+
 
 /* Central node */
 .infra-node {
