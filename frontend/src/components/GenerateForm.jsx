@@ -37,7 +37,7 @@ export default function GenerateForm({ onGenerate, loading }) {
     <form className="form-card" onSubmit={handleSubmit}>
       <h2>Describe your stack</h2>
       
-      <div className="form-row pro-toggle-row">
+      <div className="form-row pro-toggle-row pro-toggle-highlight">
       <div className="pro-toggle-text">
       <span className="pro-label">Pro / Labs mode</span>
       <span className="pro-sub">
