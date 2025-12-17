@@ -116,6 +116,40 @@ body {
   color: #fbbf24;
   border: 1px solid rgba(251, 191, 36, 0.35);
 }
+.pro-toggle-highlight {
+  margin: 1rem 0 1.25rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(34, 211, 238, 0.08),
+    rgba(139, 92, 246, 0.08)
+  );
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.pro-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pro-label {
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.pro-sub {
+  display: block;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.15rem;
+}
+.left-panel {
+  overflow-y: auto;
+  max-height: calc(100vh - 140px);
+}
 
 /* ====== HERO ====== */
 
