@@ -100,4 +100,37 @@ Requirements:
                 "dockerfile": {"type": "string"},
                 "cicd": {"type": "string"},
                 "k8s": {"type": "object"},
-                "helm": {"type": "object"
+                "helm": {"type": "object"},
+                "argocd": {"type": "object"},
+                "monitoring": {"type": "object"},
+                "terraform": {"type": "object"},
+                "readme_md": {"type": "string"}
+            },
+            "required": ["dockerfile"]
+        }
+
+    # -------------------------------------------------
+    # NORMALIZE AI OUTPUT TO MATCH RULE-BASED STRUCTURE
+    # -------------------------------------------------
+
+    def _normalize_output(self, ai):
+        """
+        Converts AI JSON into the exact shape the frontend expects.
+        """
+        return {
+            "dockerfile": ai.get("dockerfile"),
+            "cicd_config": ai.get("cicd"),
+            "cicd_meta": {
+                "filename": "pipeline.yaml",
+                "content": ai.get("cicd")
+            } if ai.get("cicd") else None,
+
+            "k8s_manifests": ai.get("k8s"),
+            "helm_chart": ai.get("helm"),
+            "argocd_app": ai.get("argocd"),
+            "monitoring_configs": ai.get("monitoring"),
+            "terraform_configs": ai.get("terraform"),
+
+            "raw": {"ai_mode": True},
+            "readme_md": ai.get("readme_md", "# AI README\n(No README provided)")
+        }
