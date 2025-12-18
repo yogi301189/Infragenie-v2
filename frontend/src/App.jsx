@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import axios from "axios"
 import GenerateForm from "./components/GenerateForm.jsx"
 import OutputPanel from "./components/OutputPanel.jsx"
-// import Navbar from "./components/Navbar.jsx
+import Navbar from "./components/Navbar.jsx"
 import Hero from "./components/Hero.jsx"
 import WhoIsItFor from "./components/WhoIsItFor.jsx"
 import FeaturesSection from "./components/FeaturesSection.jsx"
@@ -98,40 +98,7 @@ export default function App() {
     <div className="app-root">
       <Navbar />
       <Hero />
-<header className="site-header">
-  <div className="nav-inner">
-    <a href="#top" className="nav-logo">
-      <span className="nav-logo-mark">IG</span>
-      <span className="nav-logo-text">InfraGenie</span>
-    </a>
 
-    <nav className="nav-links">
-      <a href="#features" className="nav-link">Features</a>
-      <a href="#who" className="nav-link">Who it’s for</a>
-      <a href="#pricing" className="nav-link">Pricing</a>
-      <a href="#footer" className="nav-link">Contact</a>
-    </nav>
-
-    <div className="nav-actions">
-      <a
-        href="https://app.getinfragenie.com"
-        className="btn btn-ghost nav-login"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Log in
-      </a>
-      <a
-        href="https://app.getinfragenie.com"
-        className="btn btn-gradient nav-cta"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Launch app
-      </a>
-    </div>
-  </div>
-</header>
 
       {/* Live generator section */}
       <section id="generator-section" className="section section-tight">
@@ -257,3 +224,38 @@ export default function App() {
     </div>
   )
 }
+
+/*<header className="site-header">
+  <div className="nav-inner">
+    <a href="#top" className="nav-logo">
+      <span className="nav-logo-mark">IG</span>
+      <span className="nav-logo-text">InfraGenie</span>
+    </a>
+
+    <nav className="nav-links">
+      <a href="#features" className="nav-link">Features</a>
+      <a href="#who" className="nav-link">Who it’s for</a>
+      <a href="#pricing" className="nav-link">Pricing</a>
+      <a href="#footer" className="nav-link">Contact</a>
+    </nav>
+
+    <div className="nav-actions">
+      <a
+        href="https://app.getinfragenie.com"
+        className="btn btn-ghost nav-login"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Log in
+      </a>
+      <a
+        href="https://app.getinfragenie.com"
+        className="btn btn-gradient nav-cta"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Launch app
+      </a>
+    </div>
+  </div>
+</header> */
