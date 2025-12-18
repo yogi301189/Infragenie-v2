@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import axios from "axios"
 import GenerateForm from "./components/GenerateForm.jsx"
 import OutputPanel from "./components/OutputPanel.jsx"
-import Navbar from "./components/Navbar.jsx"
+// import Navbar from "./components/Navbar.jsx
 import Hero from "./components/Hero.jsx"
 import WhoIsItFor from "./components/WhoIsItFor.jsx"
 import FeaturesSection from "./components/FeaturesSection.jsx"
