@@ -38,31 +38,30 @@ export default function GenerateForm({ onGenerate, loading }) {
   return (
     <form className="form-card" onSubmit={handleSubmit}>
       <h2>Describe your stack</h2>
-      <div className="form-row pro-toggle-row pro-toggle-highlight">
-      <div className="pro-toggle-text">
+      <div className="pro-toggle-highlight">
+  <div className="pro-toggle-row-horizontal">
+    <div className="pro-toggle-text">
       <span className="pro-label">Pro / Labs mode</span>
       <span className="pro-sub">
         Use AI full-stack bundle generation (beta).
       </span>
-      </div>
-      <button
+    </div>
+
+    <button
       type="button"
-      className={"pro-toggle-pill" + (proMode ? " pro-toggle-pill-active" : "")}
+      className={
+        "pro-toggle-pill" +
+        (proMode ? " pro-toggle-pill-active" : "")
+      }
       onClick={() => setProMode((prev) => !prev)}
     >
       <span className="pro-toggle-thumb" />
       <span className="pro-toggle-text-pill">
         {proMode ? "AI Thick mode ON" : "Standard mode"}
       </span>
-      </button>
-      </div>
-      <div className="form-row">
-        <label>Language</label>
-        <select value={language} onChange={(e) => setLanguage(e.target.value)}>
-          <option value="python">Python</option>
-          <option value="node">Node.js</option>
-        </select>
-      </div>
+    </button>
+  </div>
+</div>
 
       <div className="form-row">
         <label>Framework</label>
@@ -130,7 +129,7 @@ export default function GenerateForm({ onGenerate, loading }) {
 
 {/* Infrastructure preset */}
 <div className="form-group">
-  <label htmlFor="infraPreset">Infrastructure preset (Terraform)</label>
+  <label htmlFor="infraPreset">Infrastructure preset (Terraform)  </label>
   <select
     id="infraPreset"
     value={infraPreset}
@@ -143,7 +142,7 @@ export default function GenerateForm({ onGenerate, loading }) {
     <option value="all">All of the above</option>
   </select>
   <p className="helper-text">
-    Choose which Terraform infra you want in <code>infra/terraform/</code>.
+    
   </p>
 </div>
 

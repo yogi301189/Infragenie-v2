@@ -31,7 +31,7 @@ export default function FeaturesSection() {
   ]
 
   return (
-    <section className="section">
+    <section id="features" className="features-section">
       <h2 className="section-title">What InfraGenie generates for you</h2>
       <div className="cards-grid">
         {features.map((f) => (

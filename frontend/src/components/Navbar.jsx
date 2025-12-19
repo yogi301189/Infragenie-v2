@@ -1,16 +1,21 @@
 // frontend/src/components/Navbar.jsx
 
 import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import UserDropdown from "./UserDropdown";
 
 export default function Navbar() {
+   const { user } = useAuth();// ✅ Hook INSIDE component
+
   return (
     <nav className="site-header">
       <div className="nav-inner">
         {/* Left: Brand */}
-        <a href="/" className="nav-logo">
+        <Link to="/" className="nav-logo">
           <span className="nav-logo-mark">IG</span>
           <span className="nav-logo-text">InfraGenie</span>
-        </a>
+        </Link>
 
         {/* Center: Navigation */}
         <nav className="nav-links">
@@ -21,19 +26,19 @@ export default function Navbar() {
 
         {/* Right: Auth actions */}
         <div className="nav-actions">
-          <a
-            href="/login"
-            className="btn btn-gradient nav-login"
-          >
-            Log in 
-          </a>
-
-          <a
-            href="/signup"
-            className="btn btn-gradient nav-cta"
-          >
-            Sign up
-          </a>
+          {!user ? (
+            <>
+              <Link to="/login" className="btn btn-ghost">
+                Log in
+              </Link>
+              <Link to="/signup" className="btn btn-gradient">
+                Sign up
+              </Link>
+            </>
+            
+          ) : (
+            <UserDropdown user={user} />
+          )}
         </div>
       </div>
     </nav>

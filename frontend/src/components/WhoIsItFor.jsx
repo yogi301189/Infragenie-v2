@@ -4,7 +4,7 @@ import React from "react"
 
 export default function WhoIsItFor() {
   return (
-    <section id="who-is-it-for" className="section">
+    <section id="who" className="section">
       <h2 className="section-title">Who is InfraGenie for?</h2>
       <div className="cards-grid">
         <div className="card">

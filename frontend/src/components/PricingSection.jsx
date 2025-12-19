@@ -1,6 +1,17 @@
 // frontend/src/components/PricingSection.jsx
 
 import React from "react"
+import axios from "axios";
+
+const upgradeToPro = async () => {
+  const res = await axios.post(
+    `${API_BASE_URL}/billing/checkout`,
+    { price_id: "price_123" },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+  window.location.href = res.data.url;
+};
 
 export default function PricingSection() {
   return (
