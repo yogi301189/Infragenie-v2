@@ -60,5 +60,5 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-app.include_router(billing.router)
-app.include_router(stripe_webhook.router)
+#app.include_router(billing.router)
+#app.include_router(stripe_webhook.router)
