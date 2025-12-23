@@ -30,7 +30,9 @@ def create_app() -> FastAPI:
         "https://infragenie-devops.vercel.app",  # Vercel frontend
         "https://getinfragenie.com",   
         "https://infrascribe.dev",
-        "https://www.infrascribe.dev",          # your custom domain (if used)
+        "https://app.infrascribe.dev",
+        "https://infrascribe.dev",
+        # your custom domain (if used)
         # "https://www.getinfragenie.com",       # add this if you use www
     ]
 
