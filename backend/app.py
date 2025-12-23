@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers import generate, auth
 # app.py
-from routers import billing, stripe_webhook
+
 
 
 
