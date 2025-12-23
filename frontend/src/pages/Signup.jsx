@@ -91,10 +91,10 @@ export default function Signup() {
   return (
     <div className="auth-bg">
       <div className="auth-card">
-        <div className="auth-logo">IG</div>
+        <div className="auth-logo">IS</div>
 
-        <h1 className="auth-title">📝 Sign up for InfraGenie</h1>
-        <p className="auth-subtitle">InfraGenie welcomes you!</p>
+        <h1 className="auth-title">📝 Sign up for InfraScribe</h1>
+        <p className="auth-subtitle">InfraScribe welcomes you!</p>
 
         {error && (
           <div className="mb-4 text-sm text-red-400 bg-red-950/40 border border-red-900 rounded px-3 py-2">

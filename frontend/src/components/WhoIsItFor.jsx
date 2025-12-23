@@ -5,12 +5,12 @@ import React from "react"
 export default function WhoIsItFor() {
   return (
     <section id="who" className="section">
-      <h2 className="section-title">Who is InfraGenie for?</h2>
+      <h2 className="section-title">Who is InfraScribe for?</h2>
       <div className="cards-grid">
         <div className="card">
           <h3>Solo SaaS founders</h3>
           <p>
-            You&apos;re building features, not YAML. InfraGenie handles CI/CD
+            You&apos;re building features, not YAML. InfraScribe handles CI/CD
             and Kubernetes so you can focus on shipping product.
           </p>
         </div>

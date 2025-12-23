@@ -19,7 +19,7 @@ export default function Hero() {
 Ship CI/CD & Kubernetes in minutes, not weeks.
               </span></h1>
         <p className="hero-lead">
-          InfraGenie generates Dockerfiles, CI/CD pipelines, Kubernetes/Helm
+          InfraScribe generates Dockerfiles, CI/CD pipelines, Kubernetes/Helm
           manifests, GitOps configs, and monitoring setups tailored to your app.
           No full-time DevOps engineer required.
         </p>

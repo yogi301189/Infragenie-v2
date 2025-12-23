@@ -26,7 +26,7 @@ export default function PricingSection() {
             <li>Dockerfile + CI/CD pipeline</li>
             <li>Kubernetes manifests (basic)</li>
           </ul>
-          <p className="pricing-note">Perfect for testing InfraGenie.</p>
+          <p className="pricing-note">Perfect for testing InfraScribe.</p>
         </div>
 
         <div className="card pricing-card pricing-card-highlight">

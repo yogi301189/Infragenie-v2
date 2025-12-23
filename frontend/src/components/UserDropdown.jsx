@@ -39,7 +39,7 @@ export default function UserDropdown({ user }) {
         <div className="dropdown-panel">
           <div className="dropdown-header">
             <div className="dropdown-name">
-              {user.displayName || "InfraGenie User"}
+              {user.displayName || "InfraScribe User"}
             </div>
             <div className="dropdown-email">{user.email}</div>
           </div>

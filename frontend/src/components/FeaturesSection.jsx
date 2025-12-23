@@ -26,13 +26,13 @@ export default function FeaturesSection() {
     },
     {
       title: "ZIP export",
-      body: "Download a ready-to-use bundle with everything wired up and documented in README-INFRAGENIE."
+      body: "Download a ready-to-use bundle with everything wired up and documented in README-INFRASCRIBE."
     }
   ]
 
   return (
     <section id="features" className="features-section">
-      <h2 className="section-title">What InfraGenie generates for you</h2>
+      <h2 className="section-title">What InfraScribe generates for you</h2>
       <div className="cards-grid">
         {features.map((f) => (
           <div key={f.title} className="card">

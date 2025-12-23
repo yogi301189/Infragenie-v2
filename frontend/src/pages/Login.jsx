@@ -44,7 +44,7 @@ export default function Login() {
         <div className="auth-logo">IG</div>
 
         <h1 className="auth-title">Welcome back</h1>
-        <p className="auth-subtitle">Login to continue to InfraGenie</p>
+        <p className="auth-subtitle">Login to continue to InfraScribe</p>
 
         {error && <p className="auth-error">{error}</p>}
 

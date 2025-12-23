@@ -13,8 +13,8 @@ export default function Navbar() {
       <div className="nav-inner">
         {/* Left: Brand */}
         <Link to="/" className="nav-logo">
-          <span className="nav-logo-mark">IG</span>
-          <span className="nav-logo-text">InfraGenie</span>
+          <span className="nav-logo-mark">IS</span>
+          <span className="nav-logo-text">InfraScribe</span>
         </Link>
 
         {/* Center: Navigation */}
@@ -37,7 +37,21 @@ export default function Navbar() {
             </>
             
           ) : (
-            <UserDropdown user={user} />
+            <UserDropdown>user={user} 
+            <button className="user-pill"
+  onClick={() => setOpen(!open)}
+>
+  <span className="avatar">
+    {user.displayName
+      ? user.displayName[0].toUpperCase()
+      : user.email[0].toUpperCase()}
+  </span>
+  <span className="username">
+    {user.displayName || user.email.split("@")[0]}
+  </span>
+  <span className="caret">▾</span>
+</button>
+</UserDropdown> 
           )}
         </div>
       </div>

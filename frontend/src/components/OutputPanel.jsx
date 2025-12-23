@@ -33,7 +33,7 @@ export default function OutputPanel({
            </h2>
 
             <p className="output-subtitle">
-              InfraGenie is wiring your Dockerfile, CI/CD, Kubernetes, GitOps and
+              InfraScribe is wiring your Dockerfile, CI/CD, Kubernetes, GitOps and
               monitoring configs.
             </p>
           </div>
@@ -94,7 +94,7 @@ export default function OutputPanel({
         f.push({
           id: "cicd-gha",
           label: "CI/CD – GitHub Actions",
-          filename: ".github/workflows/infragenie-ci.yml",
+          filename: ".github/workflows/infrascribe-ci.yml",
           content: cicd.github_actions
         });
       }
@@ -128,20 +128,20 @@ export default function OutputPanel({
 
     // ArgoCD
     if (result.argocd_app) {
-      if (result.argocd_app["infragenie-app.yaml"]) {
+      if (result.argocd_app["infrascribe-app.yaml"]) {
         f.push({
           id: "argocd-app",
           label: "ArgoCD – App",
-          filename: "gitops/infragenie-app.yaml",
-          content: result.argocd_app["infragenie-app.yaml"]
+          filename: "gitops/infrascribe-app.yaml",
+          content: result.argocd_app["infrascribe-app.yaml"]
         });
       }
-      if (result.argocd_app["infragenie-root.yaml"]) {
+      if (result.argocd_app["infrascribe-root.yaml"]) {
         f.push({
           id: "argocd-root",
           label: "ArgoCD – Root App",
-          filename: "gitops/infragenie-root.yaml",
-          content: result.argocd_app["infragenie-root.yaml"]
+          filename: "gitops/infrascribe-root.yaml",
+          content: result.argocd_app["infrascribe-root.yaml"]
         });
       }
     }
@@ -395,7 +395,7 @@ export default function OutputPanel({
                         </div>
                       )}
 
-            InfraGenie generated <strong>{totalFiles}</strong> files for this run.
+            InfraScribe generated <strong>{totalFiles}</strong> files for this run.
           </p>
         </div>
 
@@ -517,7 +517,7 @@ export default function OutputPanel({
                       For <span>{activeFile.filename}</span>
                     </h3>
                   </div>
-                  <span className="ai-model-pill">InfraGenie · AI</span>
+                  <span className="ai-model-pill">InfraScribe · AI</span>
                 </div>
 
                 <div className="ai-explanation-body">
