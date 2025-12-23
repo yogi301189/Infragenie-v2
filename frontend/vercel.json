@@ -11,5 +11,11 @@
       "destination": "/app",
       "permanent": false
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/app/:path*",
+      "destination": "/index.html"
+    }
   ]
 }
