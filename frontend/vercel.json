@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.infrascribe.dev"
+        }
+      ],
+      "destination": "/app",
+      "permanent": false
+    }
+  ]
+}
