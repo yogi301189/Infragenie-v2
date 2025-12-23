@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,17 @@ import { useNavigate } from "react-router-dom";
 export default function UserDropdown({ user }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+
+  // 🔒 HARD GUARD — critical
+  if (!user) return null;
+
+  const displayName =
+    user.displayName ||
+    (user.email ? user.email.split("@")[0] : "User");
+
+  const avatarLetter = displayName[0]?.toUpperCase() || "U";
+
+  const plan = user.plan ? user.plan.toUpperCase() : "FREE";
 
   const logout = async () => {
     await signOut(auth);
@@ -16,21 +27,19 @@ export default function UserDropdown({ user }) {
     <div className="user-dropdown">
       <button
         className="user-pill"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((prev) => !prev)}
       >
-        <span className="avatar">
-          {(user.displayName || user.email)[0].toUpperCase()}
-        </span>
-        <span className="username">
-          {user.displayName || user.email.split("@")[0]}
-        </span>
+        <span className="avatar">{avatarLetter}</span>
+
+        <span className="username">{displayName}</span>
+
         <span
-  className={`plan-badge ${
-    user.plan === "pro" ? "plan-pro" : "plan-free"
-  }`}
->
-  {user.plan.toUpperCase()}
-</span>
+          className={`plan-badge ${
+            plan === "PRO" ? "plan-pro" : "plan-free"
+          }`}
+        >
+          {plan}
+        </span>
 
         <span className="caret">▾</span>
       </button>
@@ -38,15 +47,19 @@ export default function UserDropdown({ user }) {
       {open && (
         <div className="dropdown-panel">
           <div className="dropdown-header">
-            <div className="dropdown-name">
-              {user.displayName || "InfraScribe User"}
-            </div>
-            <div className="dropdown-email">{user.email}</div>
+            <div className="dropdown-name">{displayName}</div>
+            {user.email && (
+              <div className="dropdown-email">{user.email}</div>
+            )}
           </div>
 
           <div className="dropdown-section">
-            <button onClick={() => navigate("/profile")}>My profile</button>
-            <button onClick={() => navigate("/pricing")}>My plan</button>
+            <button onClick={() => navigate("/profile")}>
+              My profile
+            </button>
+            <button onClick={() => navigate("/pricing")}>
+              My plan
+            </button>
           </div>
 
           <div className="dropdown-section">
@@ -65,4 +78,3 @@ export default function UserDropdown({ user }) {
     </div>
   );
 }
-

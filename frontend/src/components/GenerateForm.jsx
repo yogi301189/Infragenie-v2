@@ -1,20 +1,22 @@
 // frontend/src/components/GenerateForm.jsx
 
-import React, { useState } from "react"
+import React, { useState } from "react";
 
 export default function GenerateForm({ onGenerate, loading }) {
   console.log("🔥 GenerateForm rendered");
 
-  const [language, setLanguage] = useState("python")
-  const [framework, setFramework] = useState("flask")
-  const [cicdTool, setCicdTool] = useState("github_actions")
-  const [deployTarget, setDeployTarget] = useState("kubernetes")
-  const [cloudProvider, setCloudProvider] = useState("aws")
+  const [language, setLanguage] = useState("python");
+  const [framework, setFramework] = useState("flask");
+  const [cicdTool, setCicdTool] = useState("github_actions");
+  const [deployTarget, setDeployTarget] = useState("kubernetes");
+  const [cloudProvider, setCloudProvider] = useState("aws");
   const [infraPreset, setInfraPreset] = useState("all"); // none | eks | ec2 | ecs | all
-  const [includeGitops, setIncludeGitops] = useState(true)
-  const [includeMonitoring, setIncludeMonitoring] = useState(false)
-  const [extraContext, setExtraContext] = useState("")
-  const [proMode, setProMode] = useState(false);
+  const [includeGitops, setIncludeGitops] = useState(true);
+  const [includeMonitoring, setIncludeMonitoring] = useState(false);
+  const [extraContext, setExtraContext] = useState("");
+
+  // ✅ RENAMED: proMode → assistedMode
+  const [assistedMode, setAssistedMode] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,38 +32,45 @@ export default function GenerateForm({ onGenerate, loading }) {
       include_monitoring: includeMonitoring,
       infra_preset: infraPreset,
       extra_context: extraContext || null,
-      mode: proMode ? "ai_thick" : "rule_based",
-    }
-    onGenerate(payload)
-  }
+
+      // ✅ clearer intent
+      mode: assistedMode ? "assisted" : "deterministic",
+    };
+
+    onGenerate(payload);
+  };
 
   return (
     <form className="form-card" onSubmit={handleSubmit}>
       <h2>Describe your stack</h2>
-      <div className="pro-toggle-highlight">
-  <div className="pro-toggle-row-horizontal">
-    <div className="pro-toggle-text">
-      <span className="pro-label">Pro / Labs mode</span>
-      <span className="pro-sub">
-        Use AI full-stack bundle generation (beta).
-      </span>
-    </div>
 
-    <button
-      type="button"
-      className={
-        "pro-toggle-pill" +
-        (proMode ? " pro-toggle-pill-active" : "")
-      }
-      onClick={() => setProMode((prev) => !prev)}
-    >
-      <span className="pro-toggle-thumb" />
-      <span className="pro-toggle-text-pill">
-        {proMode ? "AI Thick mode ON" : "Standard mode"}
-      </span>
-    </button>
-  </div>
-</div>
+      <div className="pro-toggle-highlight">
+        <div className="pro-toggle-row-horizontal">
+          <div className="pro-toggle-text">
+            <span className="pro-label">Assisted mode (Labs)</span>
+            <span className="pro-sub">
+              Optional AI assistance for explanations and refinements.
+              Core infrastructure remains deterministic.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            className={
+              "pro-toggle-pill" +
+              (assistedMode ? " pro-toggle-pill-active" : "")
+            }
+            onClick={() => setAssistedMode((prev) => !prev)}
+          >
+            <span className="pro-toggle-thumb" />
+            <span className="pro-toggle-text-pill">
+              {assistedMode ? "Assisted mode ON" : "Deterministic mode"}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      
 
       <div className="form-row">
         <label>Framework</label>
