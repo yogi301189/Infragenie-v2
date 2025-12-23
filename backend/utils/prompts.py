@@ -7,7 +7,7 @@ def build_generation_prompt(data: Dict[str, Any]) -> str:
     """
     Build a natural-language prompt for an LLM based on the incoming payload.
 
-    Not yet used in the rule-based version of InfraGenie,
+    Not yet used in the rule-based version of InfraScribe,
     but this provides a clean place to add AI support later.
     """
     language = data.get("language", "python")

@@ -23,7 +23,7 @@ generation_service = GenerationService()
 
 class GenerateRequest(BaseModel):
     """
-    Payload from frontend describing what InfraGenie should generate.
+    Payload from frontend describing what InfraScribe should generate.
     """
     language: str                       # e.g. "python", "node", "java"
     framework: Optional[str] = None     # e.g. "flask", "express", "spring"
@@ -153,7 +153,7 @@ def download_zip(bundle: BundlePayload = Body(...)):
         zip_buffer,
         media_type="application/zip",
         headers={
-            "Content-Disposition": 'attachment; filename="infragenie-bundle.zip"'
+            "Content-Disposition": 'attachment; filename="infrascribe-bundle.zip"'
         },
     )
 
@@ -161,7 +161,7 @@ def download_zip(bundle: BundlePayload = Body(...)):
 @router.post("/", response_model=GenerateResponse)
 async def generate_infra(payload: GenerateRequest) -> GenerateResponse:
     """
-    Main InfraGenie endpoint – returns JSON with all configs.
+    Main InfraScribe endpoint – returns JSON with all configs.
     """
     try:
         logger.info(
@@ -212,7 +212,7 @@ def explain_file(req: ExplainRequest):
         )
 
     user_prompt = f"""
-You are InfraGenie, a DevOps assistant. Explain the following file to a developer
+You are InfraScribe, a DevOps assistant. Explain the following file to a developer
 in clear, concise language.
 
 File name: {req.filename}
@@ -251,7 +251,7 @@ Use Markdown-style bullets and short paragraphs.
             # Model responded but with empty content
             return ExplainResponse(
                 explanation=(
-                    "InfraGenie tried to generate an explanation, "
+                    "InfraScribe tried to generate an explanation, "
                     "but the AI returned an empty response. "
                     "Please try again in a moment."
                 )
@@ -266,7 +266,7 @@ Use Markdown-style bullets and short paragraphs.
         # But never throw 500 to the frontend – send a human-friendly message instead
         return ExplainResponse(
             explanation=(
-                "InfraGenie couldn't generate an AI explanation right now.\n\n"
+                "InfraScribe couldn't generate an AI explanation right now.\n\n"
                 "This is usually due to a temporary AI service or configuration issue.\n"
                 "If you are the developer, check the backend logs on Render for details:\n"
                 f"{type(e).__name__}: {e}"
@@ -299,7 +299,7 @@ async def generate_infra_bundle(payload: GenerateRequest):
             zip_buffer,
             media_type="application/zip",
             headers={
-                "Content-Disposition": 'attachment; filename="infragenie-bundle.zip"'
+                "Content-Disposition": 'attachment; filename="infrascribe-bundle.zip"'
             },
         )
 
@@ -326,7 +326,7 @@ async def refine_file(req: RefineRequest):
         raise HTTPException(status_code=400, detail="Instructions cannot be empty")
 
     refine_prompt = f"""
-You are InfraGenie, a DevOps assistant.
+You are InfraScribe, a DevOps assistant.
 
 The user will give you:
 - An existing configuration file (Dockerfile, YAML, Terraform, CI pipeline, etc.)
