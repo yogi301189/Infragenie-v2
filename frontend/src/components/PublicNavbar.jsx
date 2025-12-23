@@ -8,7 +8,7 @@ export default function PublicNavbar() {
         {/* Brand */}
         <Link to="/" className="nav-logo">
           <span className="nav-logo-mark">IS</span>
-          <span className="nav-logo-text">InfraScribe Top</span>
+          <span className="nav-logo-text">InfraScribe</span>
         </Link>
 
         {/* Marketing links */}
