@@ -118,6 +118,20 @@ body {
 }
 
 
+.app-layout {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+}
+
+.app-layout > *:first-child {
+  width: 520px;
+  flex-shrink: 0;
+}
+
+.app-layout > *:last-child {
+  flex: 1;
+}
 
 
 

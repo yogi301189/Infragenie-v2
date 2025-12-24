@@ -3,46 +3,60 @@ import axios from "axios";
 
 import GenerateForm from "../components/GenerateForm";
 import OutputPanel from "../components/OutputPanel";
+import AuthGateModal from "../components/AuthGateModal";
+
+import { useAuth } from "../context/AuthContext";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://api.getinfragenie.com";
+  import.meta.env.VITE_API_BASE_URL || "https://api.infrascribe.dev";
 
 export default function AppPage() {
+  const { user } = useAuth();
+
   const [output, setOutput] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [bundleLoading, setBundleLoading] = useState(false);
   const [error, setError] = useState("");
   const [lastPayload, setLastPayload] = useState(null);
-  const [bundleLoading, setBundleLoading] = useState(false);
 
-  const handleGenerate = async (formData) => {
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authVariant, setAuthVariant] = useState("download");
+
+  const requireAuth = (variant = "download") => {
+    setAuthVariant(variant);
+    setAuthModalOpen(true);
+  };
+
+  const handleGenerate = async (payload) => {
+    setLoading(true);
+    setError("");
+    setLastPayload(payload);
+
     try {
-      setLoading(true);
-      setError("");
-      setOutput(null);
-      setLastPayload(formData);
-
       const res = await axios.post(
         `${API_BASE_URL}/api/generate`,
-        formData,
-        { timeout: 90000 }
+        payload
       );
-
       setOutput(res.data);
     } catch (err) {
-      setError(
-        err?.response?.data?.detail ||
-          "Something went wrong while generating."
-      );
+      console.error(err);
+      setError("Failed to generate infrastructure.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDownloadBundle = async () => {
+    if (!user) {
+      requireAuth("download");
+      return;
+    }
+
     if (!lastPayload) return;
 
     try {
       setBundleLoading(true);
+
       const res = await axios.post(
         `${API_BASE_URL}/api/generate/bundle`,
         lastPayload,
@@ -51,38 +65,46 @@ export default function AppPage() {
 
       const blob = new Blob([res.data], { type: "application/zip" });
       const url = window.URL.createObjectURL(blob);
+
       const a = document.createElement("a");
       a.href = url;
-      a.download = "infrascribe-scaffold.zip";
+      a.download = "infrascribe-bundle.zip";
       a.click();
+
       window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to download ZIP");
     } finally {
       setBundleLoading(false);
     }
   };
 
   return (
-    <section className="generator-wrapper">
-      <div className="generator-shell">
-        <div className="generator-grid">
-          <div className="generator-card">
-            <GenerateForm
-              onGenerate={handleGenerate}
-              loading={loading}
-            />
-          </div>
+    <div className="app-layout">
+      {/* LEFT: Generator */}
+      <GenerateForm onGenerate={handleGenerate} />
 
-          <div className="output-card">
-            <OutputPanel
-              output={output}
-              error={error}
-              loading={loading}
-              onDownloadBundle={handleDownloadBundle}
-              bundleLoading={bundleLoading}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+      {/* RIGHT: Output */}
+      <OutputPanel
+        output={output}
+        loading={loading}
+        error={error}
+        bundleLoading={bundleLoading}
+        onDownloadBundle={handleDownloadBundle}
+      />
+
+      {/* Auth gate modal */}
+      <AuthGateModal
+        open={authModalOpen}
+        variant={authVariant}
+        onClose={() => setAuthModalOpen(false)}
+        onSignup={() => window.location.assign("/signup")}
+        onLogin={() => window.location.assign("/login")}
+        onGoogleLogin={() =>
+          window.location.assign("/login?provider=google")
+        }
+      />
+    </div>
   );
 }

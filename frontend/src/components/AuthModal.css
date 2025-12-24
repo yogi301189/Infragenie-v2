@@ -1,0 +1,126 @@
+/* ================================
+   Auth Modal – InfraScribe
+   ================================ */
+
+.auth-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 15, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-modal {
+  background: #0f1220;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 420px;
+  padding: 24px 26px;
+  color: #e5e7eb;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.auth-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.auth-modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.auth-modal-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.auth-modal-close:hover {
+  color: #ffffff;
+}
+
+.auth-modal-body {
+  margin-top: 14px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #d1d5db;
+}
+
+.auth-modal-body strong {
+  color: #ffffff;
+}
+
+.auth-modal-hint {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.auth-modal-actions {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-btn-primary {
+  background: linear-gradient(
+    135deg,
+    #34d399,
+    #8b5cf6
+  );
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.auth-btn-primary:hover {
+  opacity: 0.95;
+}
+
+.auth-btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e5e7eb;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.auth-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.auth-modal-footer {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* ================================
+   Subtle Variants
+   ================================ */
+
+.auth-modal.upgrade {
+  border-color: rgba(139, 92, 246, 0.35);
+}
+
+.auth-modal.login {
+  border-color: rgba(52, 211, 153, 0.35);
+}
